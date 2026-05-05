@@ -1,6 +1,6 @@
 package com.domushub.config;
 
-import com.domushub.service.DomusHubBot;
+import com.domushub.service.DomusHubBotService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Bean;
@@ -22,11 +22,11 @@ public class TelegramConfig {
     }
 
     @Bean
-    public SpringTelegramWebhookBot telegramWebhookBot(DomusHubBotConfig domusHubBotConfig, TelegramClient client, DomusHubBot domusHubBot) {
+    public SpringTelegramWebhookBot telegramWebhookBot(DomusHubBotConfig domusHubBotConfig, TelegramClient client, DomusHubBotService bot) {
         return SpringTelegramWebhookBot
                 .builder()
                 .botPath(domusHubBotConfig.path())
-                .updateHandler(domusHubBot::handle)
+                .updateHandler(bot::handle)
                 .setWebhook(() -> {
                     String url = domusHubBotConfig.webhookUrl() + domusHubBotConfig.path();
                     SetWebhook webhook = SetWebhook.builder().url(url).build();

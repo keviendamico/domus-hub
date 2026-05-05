@@ -1,8 +1,6 @@
 spring:
   application:
     name: domus-hub
-  profiles:
-    active: local
 telegram:
   bot:
     path: "/webhook"
