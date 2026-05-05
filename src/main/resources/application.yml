@@ -11,6 +11,11 @@ spring:
         spring.json.value.default.type: "com.domushub.model.LightEventLogMessage"
   application:
     name: domus-hub
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
 telegram:
   bot:
     path: "/webhook"

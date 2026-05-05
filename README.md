@@ -50,12 +50,27 @@ Each action calls the Shelly REST API and publishes an event to Kafka, which is 
 
 ## Services
 
+The project has two Docker Compose files:
+
+- `docker-compose.yml` — infrastructure only (postgres, kafka, kafka-ui, grafana). Used in local development.
+- `docker-compose.prod.yml` — adds the `app` service (Spring Boot). Used on the Raspberry Pi.
+
+### Local infrastructure
+
 | Service | Image | Port |
 |---|---|---|
 | `postgres` | `postgres:14.22` | 5432 |
 | `kafka` | `confluentinc/cp-kafka:7.7.8` | 9092 |
 | `kafka-ui` | `provectuslabs/kafka-ui:v0.7.2` | 8081 |
 | `grafana` | `grafana/grafana` | 3000 |
+
+### Production (Pi)
+
+All of the above plus:
+
+| Service | Port |
+|---|---|
+| `app` (Spring Boot) | 8080 |
 
 ## Getting Started
 
@@ -87,6 +102,31 @@ ngrok http 8080
 TELEGRAM_BOT_TOKEN=...
 TELEGRAM_WEBHOOK_URL=https://<ngrok-url>
 DEVICE_LIGHT_LIVING_ROOM=http://192.168.1.x
+```
+
+### Deploy on Raspberry Pi
+
+1. Create a `.env` file in the project root (never commit this file):
+```
+POSTGRES_USER=
+POSTGRES_PASS=
+
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_WEBHOOK_URL=
+
+DEVICE_LIGHT_LIVING_ROOM=
+```
+
+2. Set up a Cloudflare Tunnel pointing to `localhost:8080` and use the resulting URL as `TELEGRAM_WEBHOOK_URL`.
+
+3. Start everything:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+4. Create the database schema:
+```bash
+docker exec -i domus-hub-db psql -U root -d domus_hub < schema.sql
 ```
 
 ### Spring profiles
