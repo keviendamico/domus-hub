@@ -1,6 +1,22 @@
 spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.domushub.model"
+        spring.json.value.default.type: "com.domushub.model.LightEventLogMessage"
   application:
     name: domus-hub
 telegram:
   bot:
     path: "/webhook"
+domus-hub:
+  kafka:
+    topics:
+      light-event-log-topic: "light_event_log_topic"
+    groups:
+      light-event-log-group-id: "light_event_log_group"

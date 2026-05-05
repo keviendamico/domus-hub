@@ -1,4 +1,4 @@
-package com.domushub.config;
+package com.domushub.config.telegram;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

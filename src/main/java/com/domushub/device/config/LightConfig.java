@@ -9,7 +9,7 @@ public record LightConfig(String livingRoom) {
     public String getRoomIp(RoomEnum room) {
         return switch (room) {
             case RoomEnum.LIVING_ROOM -> livingRoom;
-            default -> null;
+            default -> throw new IllegalArgumentException("Unknown room: " + room);
         };
     }
 }

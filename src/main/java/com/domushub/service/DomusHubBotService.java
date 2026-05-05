@@ -1,8 +1,11 @@
 package com.domushub.service;
 
 import com.domushub.device.light.ShellyDeviceInterface;
+import com.domushub.model.LightEventLogMessage;
 import com.domushub.model.RoomEnum;
+import com.domushub.producer.LightEventLogProducer;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -17,11 +20,13 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class DomusHubBotService {
 
     private final ShellyDeviceInterface shellyDevice;
+    private final LightEventLogProducer lightEventLogProducer;
     private final TelegramClient telegramClient;
 
     public BotApiMethod<?> handle(Update update) {
@@ -64,17 +69,26 @@ public class DomusHubBotService {
         if (dataSplit.length != 2) {
             return AnswerCallbackQuery.builder().callbackQueryId(callbackId).build();
         }
-        RoomEnum room = RoomEnum.fromName(dataSplit[0]);
+        RoomEnum room;
+        try {
+            room = RoomEnum.fromName(dataSplit[0]);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid room name: {}", dataSplit[0]);
+            return AnswerCallbackQuery.builder().callbackQueryId(callbackId).build();
+        }
         String action = dataSplit[1];
+        final LightEventLogMessage event = new LightEventLogMessage(room.getName(), chatId, action);
         return switch (action) {
             case "on" -> {
                 shellyDevice.turnOn(room);
                 answerCallback(callbackId);
+                lightEventLogProducer.send(event);
                 yield new SendMessage(chatId, "💡");
             }
             case "off" -> {
                 shellyDevice.turnOff(room);
                 answerCallback(callbackId);
+                lightEventLogProducer.send(event);
                 yield new SendMessage(chatId, "🌑");
             }
             default -> AnswerCallbackQuery.builder().callbackQueryId(callbackId).build();

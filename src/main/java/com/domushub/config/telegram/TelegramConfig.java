@@ -1,4 +1,4 @@
-package com.domushub.config;
+package com.domushub.config.telegram;
 
 import com.domushub.service.DomusHubBotService;
 import lombok.extern.slf4j.Slf4j;
