@@ -45,9 +45,11 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: domus-hub-kafka:19092
   grafana:
     container_name: domus-hub-grafana
-    image: grafana/grafana:main
+    image: grafana/grafana:13.1.0-25351545110-ubuntu
     ports:
       - "3000:3000"
+    depends_on:
+      - postgres
     volumes:
       - grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
